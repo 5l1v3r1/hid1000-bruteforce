@@ -524,6 +524,120 @@ static void fcAll(uint8_t fc, int *n, uint8_t clock, uint16_t *modCnt)
 }
 
 // prepare a waveform pattern in the buffer based on the ID given then
+// simulate a HID tag until the button is pressed or after #numcycles cycles
+// Used to bruteforce HID in standalone mode.
+void CmdHIDsimTAGtemporized(int hi, int lo, int ledcontrol, int numcycles)
+{
+	int n=0, i=0, x=0;
+	int period=0, gap=0;
+	uint8_t *tab = BigBuf_get_addr();
+
+	/*
+	 HID tag bitstream format
+	 The tag contains a 44bit unique code. This is sent out MSB first in sets of 4 bits
+	 A 1 bit is represented as 6 fc8 and 5 fc10 patterns
+	 A 0 bit is represented as 5 fc10 and 6 fc8 patterns
+	 A fc8 is inserted before every 4 bits
+	 A special start of frame pattern is used consisting a0b0 where a and b are neither 0
+	 nor 1 bits, they are special patterns (a = set of 12 fc8 and b = set of 10 fc10)
+	*/
+
+	if (hi>0xFFF) {
+		DbpString("Tags can only have 44 bits. - USE lf simfsk for larger tags");
+		return;
+	}
+	fc(0,&n);
+	// special start of frame marker containing invalid bit sequences
+	fc(8,  &n);	fc(8,  &n); // invalid
+	fc(8,  &n);	fc(10, &n); // logical 0
+	fc(10, &n);	fc(10, &n); // invalid
+	fc(8,  &n);	fc(10, &n); // logical 0
+
+	WDT_HIT();
+	// manchester encode bits 43 to 32
+	for (i=11; i>=0; i--) {
+		if ((i%4)==3) fc(0,&n);
+		if ((hi>>i)&1) {
+			fc(10, &n); fc(8,  &n);		// low-high transition
+		} else {
+			fc(8,  &n); fc(10, &n);		// high-low transition
+		}
+	}
+
+	WDT_HIT();
+	// manchester encode bits 31 to 0
+	for (i=31; i>=0; i--) {
+		if ((i%4)==3) fc(0,&n);
+		if ((lo>>i)&1) {
+			fc(10, &n); fc(8,  &n);		// low-high transition
+		} else {
+			fc(8,  &n); fc(10, &n);		// high-low transition
+		}
+	}
+
+	if (ledcontrol)
+		LED_A_ON();
+
+	period = n;
+
+	FpgaDownloadAndGo(FPGA_BITSTREAM_LF);
+	FpgaWriteConfWord(FPGA_MAJOR_MODE_LF_EDGE_DETECT);
+
+	AT91C_BASE_PIOA->PIO_PER = GPIO_SSC_DOUT | GPIO_SSC_CLK;
+
+	AT91C_BASE_PIOA->PIO_OER = GPIO_SSC_DOUT;
+	AT91C_BASE_PIOA->PIO_ODR = GPIO_SSC_CLK;
+
+ #define SHORT_COIL()	LOW(GPIO_SSC_DOUT)
+ #define OPEN_COIL()		HIGH(GPIO_SSC_DOUT)
+
+	i = 0;
+
+	for(;;) {
+		//wait until SSC_CLK goes HIGH
+		while(!(AT91C_BASE_PIOA->PIO_PDSR & GPIO_SSC_CLK)) {
+			if(BUTTON_PRESS() || usb_poll() || x==numcycles) {
+				DbpString("Stopped");
+				return;
+			}
+			WDT_HIT();
+		}
+		if (ledcontrol)
+			LED_D_ON();
+
+		if(tab[i])
+			OPEN_COIL();
+		else
+			SHORT_COIL();
+
+		if (ledcontrol)
+			LED_D_OFF();
+		//wait until SSC_CLK goes LOW
+		while(AT91C_BASE_PIOA->PIO_PDSR & GPIO_SSC_CLK) {
+			if(BUTTON_PRESS() || x==numcycles) { 
+				DbpString("Stopped");
+				return;
+			}
+			WDT_HIT();
+		}
+
+		i++;
+		x++; 
+		if(i == period) {
+
+			i = 0;
+			if (gap) {
+				SHORT_COIL();
+				SpinDelayUs(gap);
+			}
+		}
+	}
+
+	if (ledcontrol)
+		LED_A_OFF();
+}
+
+// prepare a waveform pattern in the buffer based on the ID given then
 // simulate a HID tag until the button is pressed
 void CmdHIDsimTAG(int hi, int lo, int ledcontrol)
 {
