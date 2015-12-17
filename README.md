@@ -19,6 +19,8 @@ Installation:
 Stand-alone mode diagram:
 ![alt tag](https://raw.githubusercontent.com/federicodotta/proxmark3/master/StandAloneModeDiagram.png)
 
+**Use at your own risk. The authors are not responsable to any damagings, malfunctioning or issues caused by the code or by the use of the code.**
+
 # INTRODUCTION:
 
 The proxmark3 is a powerful general purpose RFID tool, the size of a deck
