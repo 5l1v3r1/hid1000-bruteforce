@@ -1,6 +1,23 @@
-NOTICE:
-(2014-03-26)
-This is now the official Proxmark repository!
+PROXMARK3 - HID CORPORATE 1000 BRUTEFORCER (STAND-ALONE MODE)
+
+This version of Proxmark3 firmware adds one extra stand-alone mode to proxmark3 firmware.
+The new stand-alone mode allows to execute a bruteforce on HID Corporate 1000 readers, by reading a specific badge
+and bruteforcing the Card Number (incrementing and decrementing it), mainteining the same Facility Code of the 
+original badge.
+
+Based on an idea of Brad Antoniewicz of McAfee® Foundstone® Professional Services (ProxBrute), tha stand-alone mode has been
+rewritten in order to overcome some limitations of ProxBrute firmware, that does not consider parity bits.
+
+Created by:
+- Federico Dotta - Security Expert at @ Mediaservice.net
+- Maurizio Agazzini - Senior Security Advisor at @ Mediaservice.net
+
+Installation:
+- Download sources and compile it OR
+- Download the release from the "Releases" section
+
+Stand-alone mode diagram:
+![alt tag](https://raw.githubusercontent.com/federicodotta/proxmark3/master/StandAloneModeDiagram.png)
 
 INTRODUCTION:
 
