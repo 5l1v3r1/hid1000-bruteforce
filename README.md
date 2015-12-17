@@ -1,4 +1,4 @@
-PROXMARK3 - HID CORPORATE 1000 BRUTEFORCER (STAND-ALONE MODE)
+# PROXMARK3 - HID CORPORATE 1000 BRUTEFORCER (STAND-ALONE MODE)
 
 This version of Proxmark3 firmware adds one extra stand-alone mode to proxmark3 firmware.
 The new stand-alone mode allows to execute a bruteforce on HID Corporate 1000 readers, by reading a specific badge
@@ -19,7 +19,7 @@ Installation:
 Stand-alone mode diagram:
 ![alt tag](https://raw.githubusercontent.com/federicodotta/proxmark3/master/StandAloneModeDiagram.png)
 
-INTRODUCTION:
+# INTRODUCTION:
 
 The proxmark3 is a powerful general purpose RFID tool, the size of a deck
 of cards, designed to snoop, listen and emulate everything from
@@ -29,7 +29,7 @@ This repository contains enough software, logic (for the FPGA), and design
 documentation for the hardware that you could, at least in theory,
 do something useful with a proxmark3.
 
-RESOURCES:
+# RESOURCES:
 
    * This repository!
       https://github.com/Proxmark/proxmark3
@@ -48,14 +48,14 @@ RESOURCES:
        -or-
        http://webchat.freenode.net/?channels=#proxmark3
    
-DEVELOPMENT:
+# DEVELOPMENT:
 
 The tools required to build  or run the project will vary depending on
 your operating system. Please refer to the Wiki for details.
 
    * https://github.com/Proxmark/proxmark3/wiki
 
-OBTAINING HARDWARE:
+# OBTAINING HARDWARE:
 
 The Proxmark 3 is available for purchase (assembled and tested) from the
 following locations:
@@ -81,7 +81,7 @@ The printed circuit board artwork is also available, as Gerbers and an
 Excellon drill file.
 
 
-LICENSING:
+# LICENSING:
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
