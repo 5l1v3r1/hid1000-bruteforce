@@ -274,7 +274,7 @@ uint32_t des_f(uint32_t r, uint8_t* kr){
 	uint64_t data;
 	uint8_t *sbp; /* sboxpointer */ 
 	permute((uint8_t*)e_permtab, (uint8_t*)&r, (uint8_t*)&data);
-	for(i=0; i<7; ++i)
+	for(i=0; i<6; ++i)
 		((uint8_t*)&data)[i] ^= kr[i];
 	
 	/* Sbox substitution */
@@ -377,6 +377,60 @@ void tdes_dec(void* out, void* in, const uint8_t* key){
 	des_enc(out, out, (uint8_t*)key + 8);
 	des_dec(out, out, (uint8_t*)key + 0);
 }
+
+void tdes_2key_enc(void* out, const void* in, size_t length, const void* key, unsigned char iv[8]){
+
+	if( length % 8 ) return; 
+	
+	uint8_t i;
+	uint8_t* tin = (uint8_t*) in;
+	uint8_t* tout = (uint8_t*) out;
+	
+	while( length > 0 )
+	{
+		for ( i = 0; i < 8; i++ )
+			tout[i] = (unsigned char)(tin[i] ^ iv[i]);
+
+		des_enc(tout,  tin, (uint8_t*)key + 0);
+		des_dec(tout, tout, (uint8_t*)key + 8);
+		des_enc(tout, tout, (uint8_t*)key + 0);
+		
+		memcpy(iv, tout, 8);
+
+		tin  += 8;
+		tout += 8;
+		length -= 8;
+	}
+}
+
+void tdes_2key_dec(void* out, const void* in, size_t length, const void* key, unsigned char iv[8]){
+	
+	if( length % 8 ) return; 
+
+	uint8_t i;
+	unsigned char temp[8];
+	uint8_t* tin = (uint8_t*) in;
+	uint8_t* tout = (uint8_t*) out;
+	
+	while( length > 0 )
+	{
+		memcpy(temp, tin, 8);
+
+		des_dec(tout,  tin, (uint8_t*)key + 0);
+		des_enc(tout, tout, (uint8_t*)key + 8);
+		des_dec(tout, tout, (uint8_t*)key + 0);	 	 
+
+		for (i = 0; i < 8; i++)
+			tout[i] = (unsigned char)(tout[i] ^ iv[i]);
+
+		memcpy(iv, temp, 8);
+		
+		tin  += 8;
+		tout += 8;
+		length -= 8;
+	}
+}
+
 
 /******************************************************************************/
 
