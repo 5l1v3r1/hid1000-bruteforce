@@ -21,6 +21,9 @@ Stand-alone mode diagram:
 
 **Use at your own risk. The authors are not responsable to any damagings, malfunctioning or issues caused by the code or by the use of the code.**
 
+# Additional Instructions for elechouse model or original PM3:
+https://legacysecuritygroup.com/index.php/projects/recent/9-rfid/7-proxmark-3-emulating-hid-tags-in-standalone-mode
+
 # INTRODUCTION:
 
 The proxmark3 is a powerful general purpose RFID tool, the size of a deck
